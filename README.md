@@ -22,10 +22,10 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 - libディレクトリはsupabaseクライアント、componentsにコンポーネントをいれる
 - supabaseのpostgresqlでauth,public,storageのリレーションを行う
 - テーブルはauth.users,public.profile,public.todos,storage.objectsを使用
-
+- 
   auth.users -> 外部キーuid -> public.profile -> 外部キーuid public.todos
         └────-> 外部キーuid -> storage.objects
-        
+  
 - 認証はpkce、コールバックはauth/callbackで行う
 - クライアント側での権限はユーザー削除と画像削除のみrolekeyを使用する
 - クライアント側で.rpcは使用しない

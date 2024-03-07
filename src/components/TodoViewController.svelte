@@ -4,7 +4,9 @@
   import { userId } from '../store/user';
   import TodoUpdate from '../components/TodoUpdate.svelte';
   import TodoDelete from '../components/TodoDelete.svelte';
+  import TodoCreate from '../components/TodoCreate.svelte';
   import Modal from '../components/Modal.svelte';
+  import {timeChange} from '../lib/dateconverter';
 
   let uid: string | null = null;
 
@@ -22,19 +24,29 @@
   }
 
   onMount(async() => {
+    get_todo_all()
+  })
+
+  const get_todo_all = async() => {
     try{
-      const { data, error } = await supabase.from('todos').select('*')
-      todo_all_data = data
+      const { data, error } = await supabase.from('todos').select('*').order('updated_at', { ascending: false })
+      todo_all_data = data.filter(todo => {
+        todo.created_at = timeChange(todo.created_at)
+        if(todo.updated_at)todo.updated_at = timeChange(todo.updated_at)
+        return todo
+      })
       todo_view_data = data.filter(todo => !todo.completed)
+      handle_todo_search()
     }
     catch(error){
       console.log(error.message)
     }
-  })
+  }
 
-  const handle_todo_search = async (event) => {
+  const handleCheckboxChange = async (event) => {
     const { checked, value, id } = event.target;
-    switch (id) {
+    const check_id = id.split('-')[0]
+    switch (check_id) {
       case 'priority':
         if (checked) {
           query_priority = [...query_priority, value];
@@ -48,6 +60,10 @@
       default:
         break;
     }
+    handle_todo_search()
+  }
+  
+  const handle_todo_search = async () => {
 
     if (query_priority.length || query_completed) {
       todo_view_data = todo_all_data.filter(todo => {
@@ -70,47 +86,58 @@
   }
 </script>
 
-<div class="flex flex-col">
-<div>
-  <label for="priority"><input type="checkbox" id="priority" value="low" on:change={handle_todo_search} class="checkbox" /> row</label>
-  <label for="priority"><input type="checkbox" id="priority" value="medium" on:change={handle_todo_search} class="checkbox" /> medium</label>
-  <label for="priority"><input type="checkbox" id="priority" value="high" on:change={handle_todo_search} class="checkbox" /> high</label>
-  <label for="completed"><input type="checkbox" id="completed" value="true" on:change={handle_todo_search} class="checkbox" /> close</label>
-</div>
+<div class="flex w-100 justify-center items-start gap-3">
+  <TodoCreate get_todo_all={get_todo_all} />
 
-{#if todo_view_data.length > 0}
-  {#each todo_view_data as todo}
-    <div class="flex justify-center items-center">
-      <div class="card w-96 base-200 base-content border mb-2">
-        <div class="card-body">
-          <h2 class="card-title">{todo.title}</h2>
-          {#if todo.priority == 'low'}
-            <div class="badge badge-success gap-2">
-              {todo.priority}
+  <div class="flex flex-col">
+    <div>
+      <label for="priority-low"><input type="checkbox" id="priority-low" value="low" on:change={handleCheckboxChange} class="checkbox-xs" /> row</label>
+      <label for="priority-medium"><input type="checkbox" id="priority-medium" value="medium" on:change={handleCheckboxChange} class="checkbox-xs" /> medium</label>
+      <label for="priority-high"><input type="checkbox" id="priority-high" value="high" on:change={handleCheckboxChange} class="checkbox-xs" /> high</label>
+      <label for="completed-check"><input type="checkbox" id="completed-check" value="true" on:change={handleCheckboxChange} class="checkbox-xs" /> close</label>
+    </div>
+    
+    {#if todo_view_data.length > 0}
+      {#each todo_view_data as todo}
+        <div class="flex justify-center items-center">
+          <div class="card w-96 base-200 base-content border mb-2">
+            <div class="card-body">
+              <h2 class="card-title">{todo.title}</h2>
+              {#if todo.priority == 'low'}
+                <div class="badge badge-success gap-2">
+                  {todo.priority}
+                </div>
+              {:else if todo.priority == 'medium'}
+                <div class="badge badge-warning gap-2">
+                  {todo.priority}
+                </div>
+              {:else if todo.priority == 'high'}
+                <div class="badge badge-error gap-2">
+                  {todo.priority}
+                </div>
+              {/if}
+              {#if todo.completed}
+                <div class="badge badge-ghost">close</div>
+              {/if}
+              <p class="text-left">{todo.body}</p>
+              <div class="card-actions justify-end">
+                <button class="btn" onclick="my_modal.showModal()" on:click={() => props_update_id = todo.id}>編集</button>
+                <button class="btn" on:click={() => props_delete_id = todo.id}>削除</button>
+              </div>
+              <div>
+                {#if todo.updated_at}
+                  <time class="text-sm block text-right">{todo.updated_at}</time>
+                  {:else}
+                  <time class="text-sm block text-right">{todo.created_at}</time>
+                {/if}
+              </div>
             </div>
-          {:else if todo.priority == 'medium'}
-            <div class="badge badge-warning gap-2">
-              {todo.priority}
-            </div>
-          {:else if todo.priority == 'high'}
-            <div class="badge badge-error gap-2">
-              {todo.priority}
-            </div>
-          {/if}
-          {#if todo.completed}
-            <div class="badge badge-ghost">close</div>
-          {/if}
-          <p class="text-left">{todo.body}</p>
-          <div class="card-actions justify-end">
-            <button class="btn" onclick="my_modal.showModal()" on:click={() => props_update_id = todo.id}>編集</button>
-            <button class="btn" on:click={() => props_delete_id = todo.id}>削除</button>
           </div>
         </div>
-      </div>
-    </div>
-  {/each}
-{/if}
-
-<TodoUpdate {props_update_id} />
-<TodoDelete {props_delete_id} />
+      {/each}
+    {/if}
+    
+    <TodoUpdate {props_update_id} get_todo_all={get_todo_all} />
+    <TodoDelete {props_delete_id} get_todo_all={get_todo_all} />
+  </div>
 </div>

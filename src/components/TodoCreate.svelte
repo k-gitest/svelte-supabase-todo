@@ -1,12 +1,13 @@
 <script lang="ts">
   import { supabase } from '../lib/supabase'
   import { userId } from '../store/user';
+  
+  export let get_todo_all
 
   let uid: string | null = null;
   let title = ''
   let body = ''
   let priority = 'low'
-  let completed = false
   let is_disable = true
 
   $: {
@@ -22,7 +23,6 @@
       title,
       body,
       priority,
-      completed,
     }
 
     try{
@@ -35,7 +35,8 @@
       title = '';
       body = '';
       priority = 'low';
-      completed = false;
+
+      await get_todo_all()
     }
     catch(error){
       console.error('エラー:', error.message);
@@ -68,11 +69,6 @@
         <label for="high">
           <input type="radio" id="high" class="radio radio-xs" bind:group={priority} value="high" />
           <span>高</span>
-        </label>
-      </div>
-      <div>
-        <label for="completed"><span class="block">完了：</span>
-          <input type="checkbox" id="completed" class="toggle toggle-sm" bind:checked={completed} />
         </label>
       </div>
       <div>
