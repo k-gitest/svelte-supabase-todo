@@ -34,6 +34,7 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 - ポリシーは全てuid = auth.uid()による認証前提
 - uidはAPPで取得しstoreで管理する
 - todoデータの取得は最初のキャッシュで検索をし、追加更新削除で再取得する
+- 通信状態はトーストで表示し、storeでメッセージとカラーを管理する
 
 ## 開発環境
 
@@ -68,6 +69,7 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 
 - svelteは公式の通りにインストールするとsveltekitになるのでspaの場合viteからする
 - viteでenvを使用する場合はVITE_と頭に付ける、publicでない場合は外す
+- viteでのエイリアスが動作しないのでパス省略はできない
 - supabaseはpublicスキーマ以外は保護されており変更はできない
 - prismaなどORMで使用できるのはpublicなど自分で作成するスキーマに限られる
 - supbaseクライアントにwhereはないのでfilterやinを使用する

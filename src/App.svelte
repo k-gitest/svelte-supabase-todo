@@ -8,6 +8,7 @@
   import Home from "./pages/home.svelte";
   import Header from "./components/Header.svelte";
   import Footer from "./components/Footer.svelte";
+  import Toast from "./components/Toast.svelte";
   import About from "./pages/about.svelte";
   import Signin from "./pages/signin.svelte";
   import Dashboard from "./pages/dashboard.svelte";
@@ -82,6 +83,7 @@
 <main class="min-h-lvh p-2 text-center">
   <Router {routes} restoreScrollState={true} />
 </main>
+<Toast />
 <Footer />
 
 <style>

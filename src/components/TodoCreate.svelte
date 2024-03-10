@@ -1,8 +1,9 @@
 <script lang="ts">
   import { supabase } from '../lib/supabase'
   import { userId } from '../store/user';
+  import { toaster } from '../store/toast';
   
-  export let get_todo_all
+  export let get_todo_all: () => void;
 
   let uid: string | null = null;
   let title = ''
@@ -16,6 +17,7 @@
   }
 
   const handleSubmit = async (event) => {
+    is_disable = true
     event.preventDefault();
 
     const postdata = {
@@ -26,22 +28,29 @@
     }
 
     try{
+      toaster.set({isActive: true, message: '送信中...'})
       const { data, error } = await supabase.from('todos').insert(postdata)
       if(error){
         throw error;
       }
 
       console.log('送信されました', data)
+      toaster.set({isActive: true, message: '送信されました', class: 'success'})
       title = '';
       body = '';
       priority = 'low';
-
+      is_disable = false
       await get_todo_all()
     }
     catch(error){
       console.error('エラー:', error.message);
+      toaster.set({isActive: true, message: '送信できませんでした'})
     }
-
+    finally{
+      setTimeout(() => {
+        toaster.set();
+      }, 3000);
+    }
   }
 </script>
 

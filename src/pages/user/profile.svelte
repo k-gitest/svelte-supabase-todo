@@ -5,6 +5,7 @@
   import { userId } from "../../store/user";
   import Avatar from "../../components/Avatar.svelte";
   import DeleteUser from "../../components/DeleteUser.svelte";
+  import { toaster } from "../../store/toast";
 
   let uid: string | null;
   $: {
@@ -53,6 +54,7 @@
   const updateProfile = async () => {
     try {
       loading = true;
+      toaster.set({ isActive: true, message: "接続中..." });
 
       const updates = {
         id: uid,
@@ -67,12 +69,17 @@
       if (error) {
         throw error;
       }
+      toaster.set({ isActive: true, message: "完了！", class: "success" });
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
       }
+      toaster.set({ isActive: true, message: "接続できませんでした" });
     } finally {
       loading = false;
+      setTimeout(() => {
+        toaster.set({ isActive: false });
+      }, 3000);
     }
   };
 </script>

@@ -1,6 +1,6 @@
 <script>
   import logo from "../assets/svelte.png";
-  import Counter from "../lib/Counter.svelte";
+  import Counter from "../components/Counter.svelte";
 </script>
 
 <div class="hero min-h-screen bg-base-200 mb-5">

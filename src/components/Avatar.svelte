@@ -7,11 +7,14 @@
   let avatarUrl: string = null
   let uploading = false
   let files: FileList
+  let loading = false;
 
   const dispatch = createEventDispatcher()
 
   const downloadImage = async (path: string) => {
     try {
+      loading = true
+      
       const { data, error } = await supabase.storage.from('avatars').download(path)
 
       if (error) {
@@ -24,6 +27,9 @@
       if (error instanceof Error) {
         console.log('Error downloading image: ', error.message)
       }
+    }
+    finally{
+      loading = false
     }
   }
 
@@ -60,12 +66,16 @@
 </script>
 
 <div aria-live="polite">
-  {#if avatarUrl} 
-    <div class="mb-4">
-      <img src={avatarUrl} alt={avatarUrl ? 'Avatar' : 'No image'} class="max-w-64" /> 
-    </div>
+  {#if loading}
+    <span class="loading loading-spinner loading-lg"></span>
   {:else}
-  <div class="avatar no-image" />
+    {#if avatarUrl} 
+      <div class="mb-4">
+        <img src={avatarUrl} alt={avatarUrl ? 'Avatar' : 'No image'} class="max-w-64" /> 
+      </div>
+    {:else}
+    <div class="avatar no-image" />
+    {/if}
   {/if}
   <div>
     <label class="btn btn-wide" for="single">
