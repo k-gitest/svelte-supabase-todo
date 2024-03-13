@@ -2,9 +2,10 @@
   import TodoUpdate from '../components/TodoUpdate.svelte';
   import TodoDelete from '../components/TodoDelete.svelte';
   import Modal from '../components/Modal.svelte'
+  import type {Todo} from '../types/supabase'
   
-  export let todo_view_data
-  export let get_todo_all
+  export let todo_view_data: Todo[]
+  export let get_todo_all: () => void;
   let props_update_id = ''
   let props_delete_id = ''
 
@@ -14,8 +15,9 @@
     ['high', 'badge-error']
   ];
 
-  const openUpdateModal = (id) => {
+  const openUpdateModal = (id: string) => {
     props_update_id = id
+    const my_modal = document.getElementById('my_modal') as HTMLDialogElement ;
     my_modal.showModal()
   }
 </script>
@@ -38,7 +40,7 @@
           {/if}
           <p class="text-left">{todo.body}</p>
           <div class="card-actions justify-end">
-            <button class="btn" on:click={openUpdateModal(todo.id)}>編集</button>
+            <button class="btn" on:click={() => openUpdateModal(todo.id)}>編集</button>
             <button class="btn" on:click={() => props_delete_id = todo.id}>削除</button>
           </div>
           <div>
@@ -59,6 +61,6 @@
 {/if}
 
 <Modal>
-  <TodoUpdate {props_update_id} {todo_view_data} {get_todo_all} />
+  <TodoUpdate {props_update_id} {get_todo_all} />
 </Modal>
 <TodoDelete {props_delete_id} {get_todo_all} />

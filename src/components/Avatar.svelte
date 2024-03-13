@@ -2,9 +2,9 @@
   import { createEventDispatcher } from 'svelte'
   import { supabase } from '../lib/supabase'
 
-  export let url: string
+  export let url: string | null
 
-  let avatarUrl: string = null
+  let avatarUrl: string | null = null
   let uploading = false
   let files: FileList
   let loading = false;
@@ -73,8 +73,6 @@
       <div class="mb-4">
         <img src={avatarUrl} alt={avatarUrl ? 'Avatar' : 'No image'} class="max-w-64" /> 
       </div>
-    {:else}
-    <div class="avatar no-image" />
     {/if}
   {/if}
   <div>

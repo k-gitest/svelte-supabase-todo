@@ -1,36 +1,30 @@
 <script lang="ts">
+  import { supabase } from '../lib/supabase'
   import { adminAuthClient } from '../lib/supabasedelete'
   import { userId } from '../store/user';
   import { toaster } from '../store/toast';
 
-  const uid = $userId;
+  let uid: string | null = null
+  uid = $userId;
   
   const handle_delete_user = async () =>{
     try{
       toaster.set({isActive: true, message: "接続中..."})
+      if(uid){
+        const { data, error } = await adminAuthClient.deleteUser(uid)
+      }
       
-      const { data, error } = await adminAuthClient.deleteUser(uid)
-
-      if(error instanceof Error){
-        throw new Error('Error deleting user');
-      }
-
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          throw error;
-        }
-        console.log('削除後にログアウトしました');
-        toaster.set({ isActive: true, message: "完了！", class: 'success'})
-
-      } catch (error) {
-        console.error('削除後ログアウトエラー:', error.message);
-        toaster.set({isActive: true, message: "接続できませんでした"})
-      }
+      const { error } = await supabase.auth.signOut();
+      console.log('削除後にログアウトしました');
+      toaster.set({ isActive: true, message: "完了！", class: 'success'})
     }
-    catch(error){
+    catch(error: any){
       console.error(error);
-      toaster.set({isActive: true, message: "削除できませんでした"})
+      if (error.message === 'Error deleting user') {
+          toaster.set({ isActive: true, message: "削除できませんでした" });
+      } else {
+          toaster.set({ isActive: true, message: "ログアウトできませんでした" });
+      }
     }
     finally{
       setTimeout(() => {

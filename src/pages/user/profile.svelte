@@ -1,60 +1,60 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { supabase } from "../../lib/supabase";
-  import type { AuthSession } from "../../lib/supabase";
-  import { userId } from "../../store/user";
-  import Avatar from "../../components/Avatar.svelte";
-  import DeleteUser from "../../components/DeleteUser.svelte";
-  import { toaster } from "../../store/toast";
+  import { onMount } from 'svelte'
+  import { supabase } from '../../lib/supabase'
+  import type { AuthSession } from '../../lib/supabase'
+  import { userId } from '../../store/user';
+  import Avatar from '../../components/Avatar.svelte'
+  import DeleteUser from '../../components/DeleteUser.svelte'
+  import { toaster } from '../../store/toast';
+  import type { Profile } from '../../types/supabase'
 
   let uid: string | null;
   $: {
     uid = $userId;
-    console.log(uid);
-    if (uid) getProfile();
+    if (uid) getProfile()
   }
 
-  let loading = false;
-  let email: string | null = null;
-  let username: string | null = null;
-  let website: string | null = null;
-  let avatarUrl: string | null = null;
+  let loading = false
+  let email: string | null = null
+  let username: string | null = null
+  let website: string | null = null
+  let avatarUrl: string | null = null
 
   onMount(() => {
-    getProfile();
-  });
+    getProfile()
+  })
 
   const getProfile = async () => {
     try {
-      loading = true;
+      loading = true
 
       const { data, error, status } = await supabase
-        .from("profiles")
-        .select("email, username, website, avatar_url")
-        .eq("id", uid)
-        .single();
+        .from('profiles')
+        .select('email, username, website, avatar_url')
+        .eq('id', uid)
+        .single()
 
-      if (error && status !== 406) throw error;
+      if (error && status !== 406) throw error
 
       if (data) {
-        email = data.email;
-        username = data.username;
-        website = data.website;
-        avatarUrl = data.avatar_url;
+        email = data.email
+        username = data.username
+        website = data.website
+        avatarUrl = data.avatar_url
       }
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        alert(error.message)
       }
     } finally {
-      loading = false;
+      loading = false
     }
-  };
+  }
 
   const updateProfile = async () => {
     try {
-      loading = true;
-      toaster.set({ isActive: true, message: "接続中..." });
+      loading = true
+      toaster.set({isActive: true, message: "接続中..."})
 
       const updates = {
         id: uid,
@@ -62,65 +62,56 @@
         website,
         avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
-      };
+      }
 
-      const { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase.from('profiles').upsert(updates)
 
       if (error) {
-        throw error;
+        throw error
       }
-      toaster.set({ isActive: true, message: "完了！", class: "success" });
+      toaster.set({ isActive: true, message: "完了！", class: 'success'})
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        alert(error.message)
       }
-      toaster.set({ isActive: true, message: "接続できませんでした" });
+      toaster.set({isActive: true, message: "接続できませんでした"})
     } finally {
-      loading = false;
+      loading = false
       setTimeout(() => {
-        toaster.set({ isActive: false });
+        toaster.set({isActive: false});
       }, 3000);
     }
-  };
+  }
 </script>
 
 <h1 class="text-3xl mb-5">プロフィールページ</h1>
+{#if loading}
+  <span class="loading loading-spinner loading-lg"></span>
+{:else}
 <div class="flex justify-center items-center">
-  <form on:submit|preventDefault={updateProfile}>
+  <form on:submit|preventDefault="{updateProfile}">
     <div class="border rounded-lg p-2 grid grid-col gap-4">
+      {#if avatarUrl !== null}
+        <Avatar url={avatarUrl} on:upload={updateProfile} />
+      {:else}
+        <div class="avatar no-image" />
+      {/if}
+
       <div>
-        <Avatar bind:url={avatarUrl} on:upload={updateProfile} />
-      </div>
-      <div>
-        <span class="block text-left">Email:</span>
-        <input
-          type="text"
-          value={email}
-          class="input input-bordered w-full max-w-xs"
-          disabled
-        />
+        <span class="block text-left">Email:</span> 
+        <input type="text" value="{email}" class="input input-bordered w-full max-w-xs" disabled />
       </div>
       <div>
         <label for="username" class="block text-left">Name</label>
-        <input
-          id="username"
-          type="text"
-          bind:value={username}
-          class="input input-bordered w-full max-w-xs"
-        />
+        <input id="username" type="text" bind:value="{username}" class="input input-bordered w-full max-w-xs" />
       </div>
       <div>
         <label for="website" class="block text-left">Website</label>
-        <input
-          id="website"
-          type="text"
-          bind:value={website}
-          class="input input-bordered w-full max-w-xs"
-        />
+        <input id="website" type="text" bind:value="{website}" class="input input-bordered w-full max-w-xs" />
       </div>
       <div>
-        <button type="submit" class="btn btn-wide" disabled={loading}>
-          {loading ? "Saving ..." : "更新"}
+        <button type="submit" class="btn btn-wide" disabled="{loading}">
+          {loading ? 'Saving ...' : '更新'}
         </button>
       </div>
     </div>
@@ -128,3 +119,4 @@
 </div>
 
 <DeleteUser />
+{/if}

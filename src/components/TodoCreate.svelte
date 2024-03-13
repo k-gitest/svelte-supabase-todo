@@ -16,7 +16,7 @@
     if(uid)is_disable = false
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     is_disable = true
     event.preventDefault();
 
@@ -42,13 +42,13 @@
       is_disable = false
       await get_todo_all()
     }
-    catch(error){
+    catch(error: any){
       console.error('エラー:', error.message);
       toaster.set({isActive: true, message: '送信できませんでした'})
     }
     finally{
       setTimeout(() => {
-        toaster.set();
+        toaster.set({isActive: false});
       }, 3000);
     }
   }

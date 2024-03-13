@@ -1,10 +1,20 @@
 <script lang="ts">
   import { fullToaster } from '../store/toast';
 
-  let toaster
+  type FullToaster = {
+    isActive: boolean;
+    message: string;
+    class: string;
+  }
   
+  let toaster = {
+    isActive: false,
+    message: '',
+    class: 'info'
+  }
+
   $: {
-    toaster = $fullToaster
+    toaster = $fullToaster as FullToaster
   }
 </script>
 

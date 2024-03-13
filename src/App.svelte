@@ -16,27 +16,27 @@
   import Todo from "./pages/todo.svelte";
   import Callback from "./pages/auth/callback.svelte";
 
-  let session: AuthSession;
+  let session: AuthSession | null = null;
   let loading = true;
 
   onMount(async () => {
     await supabase.auth.getSession().then(({ data }) => {
-      session = data.session;
-      if (session) {
-        const { user } = session;
-        userId.set(user.id);
+      if (data.session) {
+        session = data.session;
+        userId.set(session.user.id);
       } else {
+        session = null;
         userId.set(null);
       }
       loading = false;
     });
 
     await supabase.auth.onAuthStateChange((_event, _session) => {
-      session = _session;
-      if (session) {
-        const { user } = session;
-        userId.set(user.id);
+      if (_session) {
+        session = _session;
+        userId.set(session.user.id);
       } else {
+        session = null;
         userId.set(null);
       }
       loading = false;
@@ -88,7 +88,9 @@
 
 <style>
   :root {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-family: "Segoe UI", "Helvetica Neue", Arial,
+      "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans", Meiryo,
+      -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell,
+      "Open Sans", sans-serif;
   }
 </style>

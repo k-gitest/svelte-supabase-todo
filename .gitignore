@@ -31,3 +31,6 @@ schema.prisma
 # replit
 .replit
 replit.nix
+
+# supabase gen types
+sbschema.ts
