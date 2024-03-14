@@ -21,9 +21,10 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 - theme、UIコンポーネントはdaisy、レイアウト・タイポはtailwindにする
 - libディレクトリはsupabaseクライアント、componentsにコンポーネントをいれる
 - supabaseのpostgresqlでauth,public,storageのリレーションを行う
-- テーブルはauth.users,public.profile,public.todos,storage.objectsを使用
+- テーブルはauth.users, public.profile, public.todos, public.message, storage.avatars, storage.objects
  ```text
   auth.users -> 外部キーuid -> public.profile -> 外部キーuid public.todos
+        │                                 └──-> 外部キーuid public.messages
         └────-> 外部キーuid -> storage.objects
  ```
 - 認証はpkce、コールバックはauth/callbackで行う
