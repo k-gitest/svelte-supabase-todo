@@ -1,10 +1,10 @@
 # 目的
 
-svelteとSupabaseを使用したtodoアプリケーション
+svelteとSupabaseを使用したアプリケーション
 
 ## 概要
 
-svelteとSupabaseで構築されたtodoアプリケーションプロジェクトです。
+svelteとSupabaseで構築されたTODOとリアルタイムチャットのwebアプリケーションプロジェクトです。
 
 astroのwebアプリケーションに追加するsvelteアプリとして開発するのでsveltekitは使用していない
 
@@ -12,10 +12,10 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 
 - svelteでのspa開発
 - todoのCRUD構築
+- realtimeのチャット実装
 - supabaseでのauth、database、storage
 - OAuthのみでの認証
 - tailwindにdaisyUIを使用
-
 - routingはsvelte-spa-routerで行いappをミドルウェアとして管理する
 - todoのCRUDは各々コンポーネントにする
 - theme、UIコンポーネントはdaisy、レイアウト・タイポはtailwindにする

@@ -4,3 +4,4 @@
 
 <a href="#/todo" class="btn">TODO</a>
 
+<a href="#/message" class="btn">Message</a>

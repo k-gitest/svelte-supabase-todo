@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { supabase } from "./lib/supabase";
+  import { supabase } from "@/lib/supabase";
   import type { AuthSession } from "./lib/supabase";
   import Router from "svelte-spa-router";
   import { push, location } from "svelte-spa-router";
@@ -14,6 +14,7 @@
   import Dashboard from "./pages/dashboard.svelte";
   import Profile from "./pages/user/profile.svelte";
   import Todo from "./pages/todo.svelte";
+  import Message from "./pages/message.svelte";
   import Callback from "./pages/auth/callback.svelte";
 
   let session: AuthSession | null = null;
@@ -50,11 +51,12 @@
     "/dashboard": Dashboard,
     "/user/profile": Profile,
     "/todo": Todo,
+    "/message": Message,
     "/auth/callback": Callback,
     "*": Home,
   };
 
-  const protectedPaths = ["/dashboard", "/todo", "/user"];
+  const protectedPaths = ["/dashboard", "/todo", "/user", "/message"];
 
   const guardedPages = ["/login"];
 
