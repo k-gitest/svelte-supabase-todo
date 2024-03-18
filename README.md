@@ -21,15 +21,15 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 - theme、UIコンポーネントはdaisy、レイアウト・タイポはtailwindにする
 - libディレクトリはsupabaseクライアント、componentsにコンポーネントをいれる
 - supabaseのpostgresqlでauth,public,storageのリレーションを行う
-- テーブルはauth.users, public.profile, public.todos, public.message, storage.avatars, storage.objects
+- テーブルはauth.users, public.profile, public.todos, public.message, public.rooms, public.members, storage.avatars, storage.objects
  ```text
   auth.users -> 外部キーuid -> public.profile -> 外部キーuid public.todos
-        │                                 └──-> 外部キーuid public.messages
+        │                                 └──-> 外部キーuid public.messages ── members ── rooms
         └────-> 外部キーuid -> storage.objects
  ```
 - 認証はpkce、コールバックはauth/callbackで行う
 - クライアント側での権限はユーザー削除と画像削除のみrolekeyを使用する
-- クライアント側で.rpcは使用しない
+- クライアント側で.rpcは使用しないが、supabaseでトランザクションする場合はトリガー関数を利用するしかない
 - 画像はblobで取得する
 - plpgでのトリガー関数は全てdefiner
 - ポリシーは全てuid = auth.uid()による認証前提
