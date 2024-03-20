@@ -8,6 +8,7 @@
   export let get_todo_all: () => void;
   let props_update_id = ''
   let props_delete_id = ''
+  let modalId = 'my_modal'
 
   const priorityClasses = [
     ['low', 'badge-success'],
@@ -60,7 +61,7 @@
   </div>
 {/if}
 
-<Modal>
+<Modal {modalId}>
   <TodoUpdate {props_update_id} {get_todo_all} />
 </Modal>
 <TodoDelete {props_delete_id} {get_todo_all} />

@@ -1,4 +1,8 @@
-<dialog id="my_modal" class="modal modal-bottom sm:modal-middle" {close}>
+<script lang="ts">
+  export let modalId: string | null = null;
+</script>
+
+<dialog id={modalId} class="modal modal-bottom sm:modal-middle" {close}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">Hello!</h3>
     <p class="py-4">Press ESC key or click the button below to close</p>

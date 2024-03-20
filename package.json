@@ -9,6 +9,7 @@
     "check": "svelte-check"
   },
   "dependencies": {
+    "@supabase/realtime-js": "^2.9.3",
     "@supabase/supabase-js": "^2.39.7",
     "svelte": "^4.2.12"
   },
