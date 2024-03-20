@@ -18,6 +18,7 @@ astroのwebアプリケーションに追加するsvelteアプリとして開発
 - tailwindにdaisyUIを使用
 - routingはsvelte-spa-routerで行いappをミドルウェアとして管理する
 - todoのCRUDは各々コンポーネントにする
+- chatはクライアントが個別にroom作成、member追加できるようにする
 - theme、UIコンポーネントはdaisy、レイアウト・タイポはtailwindにする
 - libディレクトリはsupabaseクライアント、componentsにコンポーネントをいれる
 - supabaseのpostgresqlでauth,public,storageのリレーションを行う
