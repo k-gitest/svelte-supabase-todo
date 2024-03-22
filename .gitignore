@@ -34,3 +34,4 @@ replit.nix
 
 # supabase gen types
 sbschema.ts
+schema.ts

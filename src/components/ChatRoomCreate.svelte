@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { supabase } from '@/lib/supabase'
   import { toaster } from '@/store/toast';
   import Modal from '@/components/Modal.svelte'
@@ -6,9 +7,9 @@
   let inputRoomName = ""
   let is_disable = false
   let modalId = 'room_create'
+  let my_modal: HTMLDialogElement;
 
   const handleRoomsSubmit = async () => {
-    event.preventDefault();
     is_disable = true
     if(inputRoomName){
       const {data, error} = await supabase.from('rooms').insert([
@@ -18,7 +19,6 @@
         console.error('error', error.message)
       }
       inputRoomName = ""
-      const my_modal = document.getElementById('room_create') as HTMLDialogElement ;
       my_modal.close()
     }
     else{
@@ -27,6 +27,13 @@
     is_disable = false
   }
 
+  const openModal = () => {
+    my_modal.showModal()
+  }
+
+  onMount(() => {
+    my_modal = document.getElementById(modalId) as HTMLDialogElement;
+  })
 </script>
   
 <div class="w-full flex justify-between items-center">
@@ -37,11 +44,13 @@
     </g>
     </svg>
 新規room</p>
-  <button class="btn btn-square" onClick="room_create.showModal()" disabled={is_disable}>+</button>
+  <button class="btn btn-square" on:click={openModal} disabled={is_disable}>+</button>
 </div>
 
 <Modal {modalId}>
   <div class="w-full">
+    <h3 class="font-bold text-lg">新規Roomの作成</h3>
+    <p class="py-4">Room名を入力して下さい</p>
     <div class="flex gap-2 justify-center">
       <input type="text" class="input input-bordered w-full max-w-xs" bind:value={inputRoomName} placeholder="room名を入力してください" />
 

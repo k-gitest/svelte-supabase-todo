@@ -1,19 +1,15 @@
 <script lang="ts">
-  import { onMount, onDestroy, afterUpdate } from 'svelte';
+  import { onMount, afterUpdate } from 'svelte';
   import { supabase } from '@/lib/supabase'
   import type { RealtimePostgresChangesPayload } from '@supabase/realtime-js'
   import { userId } from '@/store/user';
   import { toaster } from '@/store/toast';
   import ChatRoomCreate from '@/components/ChatRoomCreate.svelte'
   import ChatRoomSelect from '@/components/ChatRoomSelect.svelte'
+  import ChatMessageCreate from '@/components/ChatMessageCreate.svelte'
+  import ChatMessageSubscribe from '@/components/ChatMessageSubscribe.svelte'
   import { roomId, roomName } from '@/store/room';
-
-  type Message = {
-    id: string;
-    uid: string;
-    text: string;
-    created_At: string;
-  }
+  import type { Message } from '@/types/supabase'
   
   let uid: string | null = null;
   let messages: Message[] = [];
@@ -52,36 +48,6 @@
     }
   };
 
-  const sendMessage = async (event: SubmitEvent) => {
-    event.preventDefault();
-    is_disable = true
-    try{
-      const formData = new FormData(event.target as HTMLFormElement);
-      const text = formData.get('text') as string;
-
-      const { error } = await supabase.from('messages').insert([
-        { text, uid, room_id: selectRoom },
-      ]);
-
-      toaster.set({isActive: true, message: '投稿完了！', class: 'success'})
-      const formElement = document.getElementById("chatForm") as HTMLFormElement | null;
-      if (formElement) {
-          formElement.reset();
-      }
-
-      is_disable = false
-    }
-    catch(error: any){
-      console.error('送信できませんでした', error.message);
-      toaster.set({isActive: true, message: '送信できませんでした'})
-    }
-    finally{
-      setTimeout(() => {
-        toaster.set({isActive: false});
-      }, 3000);
-    }
-  };
-
   const scrollToBottom = () => {
     if (scrollContainer) {
       scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -90,22 +56,6 @@
 
   onMount(async () => {
     await fetchMessages();
-    
-    await supabase.channel("roomone")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "messages",
-        },
-        messageListener
-      )
-      .subscribe();
-  });
-
-  onDestroy(async() => {
-      await supabase.channel("roomone").unsubscribe()
   });
 
   afterUpdate(() => {
@@ -121,6 +71,8 @@
     <ChatRoomSelect {fetchMessages} />
   </div>
 
+  <ChatMessageSubscribe {messageListener} />
+  
   <div class="flex flex-col items-center gap-2">
     <div>
       {#if $roomName}
@@ -142,15 +94,9 @@
         {/if}
       {/each}
     </div>
-  
-    <div class="w-96">
-      <form on:submit={sendMessage} id="chatForm">
-        <div class="flex gap-2 justify-center">
-          <input type="text" name="text" class="input input-bordered w-full max-w-xs" placeholder="メッセージを入力してください" />
-        <button type="submit" class="btn btn-square" disabled={is_disable}>Send</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
+    <ChatMessageCreate />
+
+  </div>
+  
 </div>
