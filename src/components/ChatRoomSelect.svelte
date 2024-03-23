@@ -45,15 +45,27 @@
     my_modal.showModal()
   }
 
+  const deleteRoom = async (room_id: string) => {
+    console.log(room_id)
+    const { error } = await supabase.from("rooms").delete().eq("room_id", room_id)
+    if(error) console.error(error.message)
+    fetchRooms()
+    fetchMessages()
+    roomName.set(null)
+  }
+
 </script>
 
 {#if rooms.length > 0}
 <div class="w-full justify-center">
   {#each rooms as room}
-    <div class="relative">
-    <button on:click={() => handleRoomChange(room.room_id)} class="block w-full h-10 border text-left">{room.room_name}</button>
-    <button class="absolute btn btn-square btn-sm top-1 right-1" on:click={() => openModal(room.room_id, room.room_name)} disabled={is_disable}>+</button>
-    </div>
+    <button on:click={() => handleRoomChange(room.room_id)} class="block w-full h-10 border text-left cursor-pointer flex justify-between items-center px-1 rounded-md">
+      <p>{room.room_name}</p>
+      <div>
+        <button class="btn btn-square btn-sm " on:click={() => openModal(room.room_id, room.room_name)} disabled={is_disable}>+</button>
+        <button class="btn btn-square btn-sm " on:click={() => deleteRoom(room.room_id)} disabled={is_disable}>×</button>
+      </div>
+    </button>
   {/each}
 </div>
 {/if}

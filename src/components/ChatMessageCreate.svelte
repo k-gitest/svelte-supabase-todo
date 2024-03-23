@@ -4,10 +4,12 @@
   import { userId } from '@/store/user';
   import { toaster } from '@/store/toast';
   import { roomId, roomName } from '@/store/room';
+  import { member_submit_disable } from '@/store/member';
 
   let uid: string | null = null;
   let selectRoom: string | null = null
   let is_disable = true
+  let member_disable: string | null = null
 
   $: {
     uid = $userId;
@@ -15,7 +17,8 @@
       is_disable = false
     }
     selectRoom = $roomId
-    if(selectRoom)checkRoomMember()
+    member_disable = $member_submit_disable
+    if(selectRoom || member_disable) checkRoomMember()
   }
 
   const sendMessage = async (event: SubmitEvent) => {
@@ -53,6 +56,7 @@
     const { data, error } = await supabase.from("members").select("*").eq("room_id", selectRoom).eq("uid", uid)
     if(error) console.error(error.message)
     if(data?.length === 0) is_disable = true
+    member_submit_disable.set(null)
   }
 
 </script>
