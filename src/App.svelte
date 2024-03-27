@@ -16,6 +16,9 @@
   import Todo from "./pages/todo.svelte";
   import Message from "./pages/message.svelte";
   import Callback from "./pages/auth/callback.svelte";
+  import ChatReadCount, {
+    ChatReadCount as countChat,
+  } from "@/components/ChatReadCount.svelte";
 
   let session: AuthSession | null = null;
   let loading = true;
@@ -42,6 +45,8 @@
       }
       loading = false;
     });
+
+    await countChat($userId);
   });
 
   const routes = {

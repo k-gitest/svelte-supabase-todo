@@ -16,7 +16,6 @@
       const { data: blob, error: err_blob } = await supabase.storage
         .from("avatars")
         .download(path);
-
       const { data } = await supabase.storage
         .from("avatars")
         .getPublicUrl(path);
