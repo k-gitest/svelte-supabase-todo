@@ -11,6 +11,10 @@
   } from "@/store/member";
   import type { Profile } from "@/types/supabase";
   import type { Member } from "@/types/supabase";
+  import GetProfiles, {
+    fetchUsers,
+    getUserName,
+  } from "@/components/GetProfiles.svelte";
 
   let members: Member[] = [];
   let users: Profile[] = [];
@@ -38,18 +42,9 @@
     }
   };
 
-  const fetchUsers = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .order("username", { ascending: true });
-    if (error) console.error("接続できませんでした", error.message);
-    users = data ?? [];
-  };
-
   onMount(async () => {
     await fetchMembers();
-    await fetchUsers();
+    users = await fetchUsers();
   });
 
   const handleMemberChange = async (event: Event) => {
@@ -97,7 +92,7 @@
                 <span>UI</span>
               </div>
             </div>
-            {member.uid}
+            {getUserName(member.uid)}
             <button
               class="btn btn-square btn-sm"
               on:click={() => handleMemberCancel(member.uid, roomMember)}

@@ -11,11 +11,17 @@
   import { roomId, roomName } from "@/store/room";
   import { noReadTotalState, noReadCountState } from "@/store/read";
   import type { Message } from "@/types/supabase";
+  import { timeChange } from "@/lib/dateconverter";
+  import GetProfiles, {
+    fetchUsers,
+    getUserName,
+  } from "@/components/GetProfiles.svelte";
+  import type { Profile } from "@/types/supabase";
 
   let uid: string | null = null;
   let messages: Message[] = [];
   let selectRoom: string | null = null;
-  let users: string[] = [];
+  let users: Profile[] = [];
   let is_disable = true;
   let scrollContainer: HTMLElement | null = null;
 
@@ -58,8 +64,8 @@
   ) => {
     if (payload.errors) console.error("payload error", payload.errors);
     if (payload.eventType === "INSERT") {
-      messages = [...messages, payload.new];
       const { uid: newUid, room_id: newRoomId } = payload.new;
+      if ($roomId === newRoomId) messages = [...messages, payload.new];
       if (newRoomId && newUid !== uid && newRoomId !== selectRoom) {
         const countPlus = isNaN($noReadCountState[newRoomId])
           ? 1
@@ -80,19 +86,12 @@
 
   onMount(async () => {
     await fetchMessages();
-    await closeBrowser();
+    users = await fetchUsers();
   });
 
   afterUpdate(() => {
     scrollToBottom();
   });
-
-  const closeBrowser = async () => {
-    window.addEventListener("beforeunload", function (event) {
-      console.log($roomId, $roomName, $userId);
-      event.returnValue = "";
-    });
-  };
 </script>
 
 <div class="flex gap-5 justify-center">
@@ -115,11 +114,23 @@
       {#each messages as message}
         {#if message.uid === uid}
           <div class="chat chat-start">
+            <div class="chat-header">
+              {getUserName(message.uid)}
+            </div>
             <div class="chat-bubble break-words text-left">{message.text}</div>
+            <div class="chat-footer opacity-50">
+              <time>{timeChange(message.created_at)}</time>
+            </div>
           </div>
         {:else}
           <div class="chat chat-end">
+            <div class="chat-header">
+              {getUserName(message.uid)}
+            </div>
             <div class="chat-bubble">{message.text}</div>
+            <div class="chat-footer opacity-50">
+              <time>{timeChange(message.created_at)}</time>
+            </div>
           </div>
         {/if}
       {/each}
